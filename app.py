@@ -268,11 +268,10 @@ else:
     st.sidebar.write("Signed in as: Group B")
     st.sidebar.write("Points: 420")
 
-    if st.sidebar.button("Log out", use_container_width=True):
+    if st.sidebar.button("Log out"):
         logout()
         st.rerun()
 
-    # Home page
     if page == "Home":
         st.markdown('<div class="app-title">EcoEarn</div>', unsafe_allow_html=True)
         st.markdown(
@@ -293,6 +292,7 @@ else:
         )
 
         col1, col2 = st.columns(2)
+
         with col1:
             st.markdown(
                 """
@@ -304,6 +304,7 @@ else:
                 """,
                 unsafe_allow_html=True
             )
+
         with col2:
             st.markdown(
                 """
@@ -348,7 +349,6 @@ else:
             unsafe_allow_html=True
         )
 
-    # Profile page
     elif page == "Profile":
         st.markdown('<div class="app-title">Your Profile</div>', unsafe_allow_html=True)
         st.markdown(
@@ -384,12 +384,9 @@ else:
         qr_image = generate_qr_code(qr_data)
 
         st.markdown('<div class="section-title">Personal QR code</div>', unsafe_allow_html=True)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
         st.image(qr_image, width=230)
         st.caption("Scan this QR code to view member details")
-        st.markdown('</div>', unsafe_allow_html=True)
 
-    # News page
     elif page == "News":
         st.markdown('<div class="app-title">Latest News</div>', unsafe_allow_html=True)
         st.markdown(
@@ -409,7 +406,6 @@ else:
                 unsafe_allow_html=True
             )
 
-    # Messages page
     elif page == "Messages":
         st.markdown('<div class="app-title">Messages</div>', unsafe_allow_html=True)
         st.markdown(
