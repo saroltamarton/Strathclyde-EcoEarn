@@ -36,7 +36,7 @@ with tab2:
             st.error("Please enter a task name.")
 
 with tab3:
-    st.subheader("My Tasks")
+    st.subheader("My Tasks")  
     if st.session_state.tasks:
         for i, task in enumerate(st.session_state.tasks, start=1):
             with st.container(border=True):
