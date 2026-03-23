@@ -8,7 +8,7 @@ st.set_page_config(page_title="EcoEarn Demo", page_icon="🌿", layout="centered
 # Demo user data
 # -----------------------------------
 if "user_name" not in st.session_state:
-    st.session_state.user_name = "Gizella Marton"
+    st.session_state.user_name = "Group B"
 
 if "member_id" not in st.session_state:
     st.session_state.member_id = "ECO-2026-001"
@@ -57,7 +57,7 @@ def generate_qr_code(data: str):
 # Sidebar navigation
 # -----------------------------------
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Profile", "News"])
+page = st.sidebar.radio("Go to", ["Home", "Profile", "News", "Messages"])
 
 st.sidebar.markdown("---")
 st.sidebar.write(f"Signed in as: {st.session_state.user_name}")
@@ -68,11 +68,11 @@ st.sidebar.write(f"Points: {st.session_state.points}")
 # -----------------------------------
 if page == "Home":
     st.title("EcoEarn")
-    st.subheader("Welcome back")
+    st.subheader("Welcome back!")
 
     st.write(
-        "EcoEarn is a simple rewards app demo. Users can track their points, view their personal QR code, "
-        "and check the latest news and updates."
+        "This is a simple EcoEarn app demo. Users can track their points, view their personal QR code, "
+        "and check the latest news and their messages."
     )
 
     col1, col2 = st.columns(2)
