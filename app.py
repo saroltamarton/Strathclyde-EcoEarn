@@ -1,74 +1,125 @@
 import streamlit as st
-from datetime import date
+import qrcode
+from io import BytesIO
 
-st.set_page_config(page_title="TaskFlow Demo", page_icon="📋", layout="centered")
+st.set_page_config(page_title="EcoEarn Demo", page_icon="🌿", layout="centered")
 
-# -----------------------------
-# Session state
-# -----------------------------
-if "tasks" not in st.session_state:
-    st.session_state.tasks = [
-        {"name": "Finish report", "due": "2026-03-25"},
-        {"name": "Prepare slides", "due": "2026-03-27"},
+# -----------------------------------
+# Demo user data
+# -----------------------------------
+if "user_name" not in st.session_state:
+    st.session_state.user_name = "Gizella Marton"
+
+if "member_id" not in st.session_state:
+    st.session_state.member_id = "ECO-2026-001"
+
+if "points" not in st.session_state:
+    st.session_state.points = 420
+
+if "news_items" not in st.session_state:
+    st.session_state.news_items = [
+        {
+            "title": "New eco reward challenge launched",
+            "date": "23 March 2026",
+            "summary": "Users can now earn extra points by completing weekly sustainability challenges."
+        },
+        {
+            "title": "Local partner shops added",
+            "date": "21 March 2026",
+            "summary": "More local businesses have joined the platform, giving users more ways to earn and use points."
+        },
+        {
+            "title": "Spring leaderboard update",
+            "date": "18 March 2026",
+            "summary": "The latest leaderboard is now live, showing the top users by reward points earned this month."
+        }
     ]
 
-# -----------------------------
-# Title
-# -----------------------------
-st.title("TaskFlow Demo")
-st.caption("Simple demo app for task management")
+# -----------------------------------
+# QR code generator
+# -----------------------------------
+def generate_qr_code(data: str):
+    qr = qrcode.QRCode(
+        version=1,
+        box_size=10,
+        border=4
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
 
-# -----------------------------
-# Navigation (tabs)
-# -----------------------------
-tab1, tab2, tab3 = st.tabs(["Dashboard", "Add Task", "My Tasks"])
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+    return buffer
 
-# -----------------------------
-# Dashboard
-# -----------------------------
-with tab1:
-    st.subheader("Dashboard")
+# -----------------------------------
+# Sidebar navigation
+# -----------------------------------
+st.sidebar.title("Navigation")
+page = st.sidebar.radio("Go to", ["Home", "Profile", "News"])
+
+st.sidebar.markdown("---")
+st.sidebar.write(f"Signed in as: {st.session_state.user_name}")
+st.sidebar.write(f"Points: {st.session_state.points}")
+
+# -----------------------------------
+# Home page
+# -----------------------------------
+if page == "Home":
+    st.title("EcoEarn")
+    st.subheader("Welcome back")
+
+    st.write(
+        "EcoEarn is a simple rewards app demo. Users can track their points, view their personal QR code, "
+        "and check the latest news and updates."
+    )
 
     col1, col2 = st.columns(2)
-    col1.metric("Total tasks", len(st.session_state.tasks))
-    col2.metric("Completed this week", 12)
+    col1.metric("Points earned", st.session_state.points)
+    col2.metric("Member level", "Green")
 
-    st.info("Upcoming reminder: Team meeting at 3:00 PM")
+    st.markdown("---")
+    st.write("Quick overview")
 
-    st.write("Recent tasks")
-    for task in st.session_state.tasks[:3]:
-        with st.container(border=True):
-            st.write(task["name"])
-            st.caption(f"Due: {task['due']}")
+    with st.container():
+        st.info("You have earned 420 points so far.")
+        st.success("Your profile QR code is ready to scan on the Profile page.")
+        st.write("Visit the News page to see the latest updates.")
 
-# -----------------------------
-# Add Task
-# -----------------------------
-with tab2:
-    st.subheader("Add Task")
+# -----------------------------------
+# Profile page
+# -----------------------------------
+elif page == "Profile":
+    st.title("Your Profile")
 
-    with st.form("task_form", clear_on_submit=True):
-        task_name = st.text_input("Task name")
-        task_due = st.date_input("Due date", value=date.today())
-        submitted = st.form_submit_button("Save task", use_container_width=True)
+    st.write(f"Name: {st.session_state.user_name}")
+    st.write(f"Member ID: {st.session_state.member_id}")
+    st.write(f"Points earned: {st.session_state.points}")
 
-    if submitted:
-        if task_name:
-            st.session_state.tasks.insert(0, {"name": task_name, "due": str(task_due)})
-            st.success("Task added successfully")
-        else:
-            st.error("Please enter a task name")
+    st.progress(min(st.session_state.points / 500, 1.0))
+    st.caption("Progress towards 500 points")
 
-# -----------------------------
-# Task list
-# -----------------------------
-with tab3:
-    st.subheader("My Tasks")
+    qr_data = (
+        f"Name: {st.session_state.user_name}\n"
+        f"Member ID: {st.session_state.member_id}\n"
+        f"Points: {st.session_state.points}"
+    )
+    qr_image = generate_qr_code(qr_data)
 
-    if st.session_state.tasks:
-        for i, task in enumerate(st.session_state.tasks, start=1):
-            with st.container(border=True):
-                st.write(f"{i}. {task['name']}")
-                st.caption(f"Due: {task['due']}")
-    else:
-        st.write("No tasks yet")
+    st.markdown("---")
+    st.subheader("Personal QR code")
+    st.image(qr_image, caption="Scan this QR code to view member details", width=250)
+
+# -----------------------------------
+# News page
+# -----------------------------------
+elif page == "News":
+    st.title("Latest News")
+
+    for item in st.session_state.news_items:
+        with st.container():
+            st.subheader(item["title"])
+            st.caption(item["date"])
+            st.write(item["summary"])
+            st.markdown("---")
