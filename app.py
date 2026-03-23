@@ -363,27 +363,6 @@ else:
                 unsafe_allow_html=True
             )
 
-       
-
-        st.markdown(
-            """
-            <div class="card">
-                <div class="label">Latest update</div>
-                <div class="value">New eco reward challenge available</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            """
-            <div class="card">
-                <div class="label">Messages</div>
-                <div class="value">2 unread demo messages</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
 
     elif page == "Profile":
         st.markdown('<div class="section-title">Your Profile</div>', unsafe_allow_html=True)
