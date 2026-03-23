@@ -363,17 +363,7 @@ else:
                 unsafe_allow_html=True
             )
 
-        st.markdown('<div class="section-title">Quick overview</div>', unsafe_allow_html=True)
-
-        st.markdown(
-            """
-            <div class="card">
-                <div class="label">QR access</div>
-                <div class="value">Ready on the Profile page</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+       
 
         st.markdown(
             """
