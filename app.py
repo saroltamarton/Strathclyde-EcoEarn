@@ -19,229 +19,73 @@ if "logged_in" not in st.session_state:
 if "login_error" not in st.session_state:
     st.session_state.login_error = False
 
-# Force fixed user details
+# Force Group B everywhere
 st.session_state.user_name = "Group B"
 st.session_state.member_id = "ECO-2026-001"
 st.session_state.points = 420
 
 if "news_items" not in st.session_state:
     st.session_state.news_items = [
-        {
-            "title": "New eco reward challenge launched",
-            "date": "23 March 2026",
-            "summary": "Users can now earn extra points by completing weekly sustainability challenges."
-        },
-        {
-            "title": "Local partner shops added",
-            "date": "21 March 2026",
-            "summary": "More local businesses have joined the platform, giving users more ways to earn and use points."
-        },
-        {
-            "title": "Spring leaderboard update",
-            "date": "18 March 2026",
-            "summary": "The latest leaderboard is now live, showing the top users by reward points earned this month."
-        }
+        {"title": "New eco reward challenge launched", "date": "23 March 2026",
+         "summary": "Users can now earn extra points by completing weekly sustainability challenges."},
+        {"title": "Local partner shops added", "date": "21 March 2026",
+         "summary": "More local businesses have joined the platform."},
+        {"title": "Spring leaderboard update", "date": "18 March 2026",
+         "summary": "Latest leaderboard is now live."}
     ]
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {
-            "from": "EcoEarn Team",
-            "date": "22 March 2026",
-            "text": "Welcome back. Your account is active and ready to use."
-        },
-        {
-            "from": "Local Rewards Partner",
-            "date": "20 March 2026",
-            "text": "You are close to your next reward level. Keep collecting points."
-        }
+        {"from": "EcoEarn Team", "date": "22 March 2026",
+         "text": "Welcome back. Your account is active."},
+        {"from": "Rewards Partner", "date": "20 March 2026",
+         "text": "You are close to your next reward level."}
     ]
 
-
 # -----------------------------
-# Helper functions
+# Functions
 # -----------------------------
-def generate_qr_code(data: str):
-    qr = qrcode.QRCode(version=1, box_size=10, border=4)
+def generate_qr_code(data):
+    qr = qrcode.QRCode(box_size=10, border=4)
     qr.add_data(data)
     qr.make(fit=True)
-
     img = qr.make_image(fill_color="black", back_color="white")
     buffer = BytesIO()
     img.save(buffer, format="PNG")
     buffer.seek(0)
     return buffer
 
-
 def login(username, password):
     if username == APP_USERNAME and password == APP_PASSWORD:
         st.session_state.logged_in = True
         st.session_state.login_error = False
     else:
-        st.session_state.logged_in = False
         st.session_state.login_error = True
-
 
 def logout():
     st.session_state.logged_in = False
     st.session_state.login_error = False
 
+# -----------------------------
+# Styling
+# -----------------------------
+st.markdown("""
+<style>
+.block-container {max-width: 430px;}
+.card {background: white; padding: 16px; border-radius: 16px;
+       margin-bottom: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.05);}
+.hero {background: #2f855a; color: white; padding: 18px;
+       border-radius: 18px; margin-bottom: 15px;}
+</style>
+""", unsafe_allow_html=True)
 
 # -----------------------------
-# App styling
-# -----------------------------
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background: linear-gradient(180deg, #eef7f1 0%, #ffffff 35%);
-    }
-
-    .block-container {
-        max-width: 430px;
-        padding-top: 1.2rem;
-        padding-bottom: 2rem;
-    }
-
-    h1, h2, h3 {
-        color: #163a2f;
-    }
-
-    .app-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #163a2f;
-        margin-bottom: 0.2rem;
-    }
-
-    .app-subtitle {
-        color: #4f6f64;
-        font-size: 0.95rem;
-        margin-bottom: 1.2rem;
-    }
-
-    .card {
-        background: white;
-        border-radius: 18px;
-        padding: 16px 18px;
-        margin-bottom: 14px;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-        border: 1px solid #edf2ef;
-    }
-
-    .hero-card {
-        background: linear-gradient(135deg, #1f7a5a 0%, #38a169 100%);
-        color: white;
-        border-radius: 22px;
-        padding: 20px;
-        margin-bottom: 16px;
-        box-shadow: 0 8px 18px rgba(31,122,90,0.18);
-    }
-
-    .hero-small {
-        font-size: 0.9rem;
-        opacity: 0.95;
-        margin-bottom: 0.35rem;
-    }
-
-    .hero-points {
-        font-size: 2rem;
-        font-weight: 700;
-        margin: 0;
-    }
-
-    .label {
-        font-size: 0.82rem;
-        color: #6c7f77;
-        margin-bottom: 0.15rem;
-    }
-
-    .value {
-        font-size: 1.05rem;
-        color: #163a2f;
-        font-weight: 600;
-    }
-
-    .section-title {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #163a2f;
-        margin-top: 0.5rem;
-        margin-bottom: 0.7rem;
-    }
-
-    .news-title {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #163a2f;
-        margin-bottom: 0.2rem;
-    }
-
-    .news-date {
-        font-size: 0.8rem;
-        color: #6f7d76;
-        margin-bottom: 0.55rem;
-    }
-
-    .news-text {
-        font-size: 0.95rem;
-        color: #2c433a;
-        line-height: 1.5;
-    }
-
-    .pill {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 999px;
-        background: #e8f6ee;
-        color: #1f7a5a;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-top: 0.45rem;
-    }
-
-    .login-card {
-        background: white;
-        border-radius: 24px;
-        padding: 24px 22px;
-        margin-top: 40px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-        border: 1px solid #edf2ef;
-    }
-
-    .login-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #163a2f;
-        text-align: center;
-        margin-bottom: 0.35rem;
-    }
-
-    .login-subtitle {
-        color: #4f6f64;
-        text-align: center;
-        font-size: 0.95rem;
-        margin-bottom: 1.2rem;
-    }
-
-    div[data-testid="stSidebar"] {
-        background: #f5fbf7;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# -----------------------------
-# Login page
+# LOGIN PAGE
 # -----------------------------
 if not st.session_state.logged_in:
-    st.markdown('<div class="login-card">', unsafe_allow_html=True)
-    st.markdown('<div class="login-title">EcoEarn</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="login-subtitle">Sign in to access the Group B demo account</div>',
-        unsafe_allow_html=True
-    )
+
+    st.markdown("## EcoEarn")
+    st.write("Login to access Group B demo")
 
     with st.form("login_form"):
         username = st.text_input("User name")
@@ -250,177 +94,81 @@ if not st.session_state.logged_in:
 
     if submitted:
         login(username, password)
-        st.rerun()
+        st.experimental_rerun()
 
     if st.session_state.login_error:
-        st.error("Incorrect user name or password")
+        st.error("Incorrect login")
 
-    st.caption("Demo login: groupb / ecoearn123")
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.caption("Login: groupb / ecoearn123")
 
 # -----------------------------
-# Main app
+# MAIN APP
 # -----------------------------
 else:
-    st.sidebar.markdown("## EcoEarn")
+
+    st.sidebar.title("EcoEarn")
     page = st.sidebar.radio("", ["Home", "Profile", "News", "Messages"])
-    st.sidebar.markdown("---")
-    st.sidebar.write("Signed in as: Group B")
+    st.sidebar.write("Group B")
     st.sidebar.write("Points: 420")
 
     if st.sidebar.button("Log out"):
         logout()
-        st.rerun()
+        st.experimental_rerun()
 
+    # HOME
     if page == "Home":
-        st.markdown('<div class="app-title">EcoEarn</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="app-subtitle">A simple rewards app demo for Group B</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown("## EcoEarn")
 
-        st.markdown(
-            f"""
-            <div class="hero-card">
-                <div class="hero-small">Welcome back</div>
-                <div style="font-size:1.2rem; font-weight:600;">Group B</div>
-                <p class="hero-points">{st.session_state.points} points</p>
-                <div class="hero-small">Your account is active and ready to use</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.markdown(f"""
+        <div class="hero">
+        Welcome back<br>
+        <b>Group B</b><br>
+        {st.session_state.points} points
+        </div>
+        """, unsafe_allow_html=True)
 
         col1, col2 = st.columns(2)
+        col1.metric("Points", st.session_state.points)
+        col2.metric("Level", "Green")
 
-        with col1:
-            st.markdown(
-                """
-                <div class="card">
-                    <div class="label">Member level</div>
-                    <div class="value">Green</div>
-                    <div class="pill">Active member</div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+        st.markdown('<div class="card">Next milestone: 500 points</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card">Check Profile for QR</div>', unsafe_allow_html=True)
 
-        with col2:
-            st.markdown(
-                """
-                <div class="card">
-                    <div class="label">QR access</div>
-                    <div class="value">Ready to scan</div>
-                    <div class="pill">Profile page</div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        st.markdown('<div class="section-title">Quick overview</div>', unsafe_allow_html=True)
-
-        st.markdown(
-            """
-            <div class="card">
-                <div class="label">Latest update</div>
-                <div class="value">New eco challenge available</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            """
-            <div class="card">
-                <div class="label">Next milestone</div>
-                <div class="value">500 points reward target</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            """
-            <div class="card">
-                <div class="label">What to check next</div>
-                <div class="value">Visit your Profile and News pages</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
+    # PROFILE
     elif page == "Profile":
-        st.markdown('<div class="app-title">Your Profile</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="app-subtitle">Personal account details for Group B</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown("## Profile")
 
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="label">Name</div>
-                <div class="value">Group B</div>
-                <br>
-                <div class="label">Member ID</div>
-                <div class="value">{st.session_state.member_id}</div>
-                <br>
-                <div class="label">Points earned</div>
-                <div class="value">{st.session_state.points}</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.write("Name: Group B")
+        st.write("Member ID:", st.session_state.member_id)
+        st.write("Points:", st.session_state.points)
 
-        st.markdown('<div class="section-title">Reward progress</div>', unsafe_allow_html=True)
-        st.progress(min(st.session_state.points / 500, 1.0))
-        st.caption("Progress towards 500 points")
+        st.progress(st.session_state.points / 500)
 
-        qr_data = (
-            f"Name: Group B\n"
-            f"Member ID: {st.session_state.member_id}\n"
-            f"Points: {st.session_state.points}"
-        )
-        qr_image = generate_qr_code(qr_data)
+        qr = generate_qr_code(f"Group B | {st.session_state.points}")
+        st.image(qr, width=200)
 
-        st.markdown('<div class="section-title">Personal QR code</div>', unsafe_allow_html=True)
-        st.image(qr_image, width=230)
-        st.caption("Scan this QR code to view member details")
-
+    # NEWS
     elif page == "News":
-        st.markdown('<div class="app-title">Latest News</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="app-subtitle">Recent updates from EcoEarn</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown("## News")
 
-        for item in st.session_state.news_items:
-            st.markdown(
-                f"""
-                <div class="card">
-                    <div class="news-title">{item["title"]}</div>
-                    <div class="news-date">{item["date"]}</div>
-                    <div class="news-text">{item["summary"]}</div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+        for n in st.session_state.news_items:
+            st.markdown(f"""
+            <div class="card">
+            <b>{n['title']}</b><br>
+            {n['date']}<br>
+            {n['summary']}
+            </div>
+            """, unsafe_allow_html=True)
 
+    # MESSAGES
     elif page == "Messages":
-        st.markdown('<div class="app-title">Messages</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="app-subtitle">Account messages for Group B</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown("## Messages")
 
-        for msg in st.session_state.messages:
-            st.markdown(
-                f"""
-                <div class="card">
-                    <div class="news-title">{msg["from"]}</div>
-                    <div class="news-date">{msg["date"]}</div>
-                    <div class="news-text">{msg["text"]}</div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+        for m in st.session_state.messages:
+            st.markdown(f"""
+            <div class="card">
+            <b>{m['from']}</b><br>
+            {m['date']}<br>
+            {m['text']}
+            </div>
+            """, unsafe_allow_html=True)
