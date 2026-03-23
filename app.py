@@ -246,7 +246,7 @@ if not st.session_state.logged_in:
     with st.form("login_form"):
         username = st.text_input("User name")
         password = st.text_input("Password", type="password")
-        submitted = st.form_submit_button("Log in", use_container_width=True)
+        submitted = st.form_submit_button("Log in")
 
     if submitted:
         login(username, password)
