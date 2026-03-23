@@ -5,8 +5,21 @@ from io import BytesIO
 st.set_page_config(page_title="EcoEarn Demo", page_icon="🌿", layout="centered")
 
 # -----------------------------
-# Force fixed user details
+# Fixed demo account
 # -----------------------------
+APP_USERNAME = "groupb"
+APP_PASSWORD = "ecoearn123"
+
+# -----------------------------
+# Session state
+# -----------------------------
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "login_error" not in st.session_state:
+    st.session_state.login_error = False
+
+# Force fixed user details
 st.session_state.user_name = "Group B"
 st.session_state.member_id = "ECO-2026-001"
 st.session_state.points = 420
@@ -46,7 +59,7 @@ if "messages" not in st.session_state:
 
 
 # -----------------------------
-# QR code generator
+# Helper functions
 # -----------------------------
 def generate_qr_code(data: str):
     qr = qrcode.QRCode(version=1, box_size=10, border=4)
@@ -58,6 +71,20 @@ def generate_qr_code(data: str):
     img.save(buffer, format="PNG")
     buffer.seek(0)
     return buffer
+
+
+def login(username, password):
+    if username == APP_USERNAME and password == APP_PASSWORD:
+        st.session_state.logged_in = True
+        st.session_state.login_error = False
+    else:
+        st.session_state.logged_in = False
+        st.session_state.login_error = True
+
+
+def logout():
+    st.session_state.logged_in = False
+    st.session_state.login_error = False
 
 
 # -----------------------------
@@ -173,6 +200,30 @@ st.markdown(
         margin-top: 0.45rem;
     }
 
+    .login-card {
+        background: white;
+        border-radius: 24px;
+        padding: 24px 22px;
+        margin-top: 40px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        border: 1px solid #edf2ef;
+    }
+
+    .login-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #163a2f;
+        text-align: center;
+        margin-bottom: 0.35rem;
+    }
+
+    .login-subtitle {
+        color: #4f6f64;
+        text-align: center;
+        font-size: 0.95rem;
+        margin-bottom: 1.2rem;
+    }
+
     div[data-testid="stSidebar"] {
         background: #f5fbf7;
     }
@@ -182,179 +233,198 @@ st.markdown(
 )
 
 # -----------------------------
-# Sidebar navigation
+# Login page
 # -----------------------------
-st.sidebar.markdown("## EcoEarn")
-page = st.sidebar.radio("", ["Home", "Profile", "News", "Messages"])
-st.sidebar.markdown("---")
-st.sidebar.write("Signed in as: Group B")
-st.sidebar.write("Points: 420")
-
-
-# -----------------------------
-# Home page
-# -----------------------------
-if page == "Home":
-    st.markdown('<div class="app-title">EcoEarn</div>', unsafe_allow_html=True)
+if not st.session_state.logged_in:
+    st.markdown('<div class="login-card">', unsafe_allow_html=True)
+    st.markdown('<div class="login-title">EcoEarn</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="app-subtitle">A simple rewards app demo for Group B</div>',
+        '<div class="login-subtitle">Sign in to access the Group B demo account</div>',
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        f"""
-        <div class="hero-card">
-            <div class="hero-small">Welcome back</div>
-            <div style="font-size:1.2rem; font-weight:600;">Group B</div>
-            <p class="hero-points">{st.session_state.points} points</p>
-            <div class="hero-small">Your account is active and ready to use</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    with st.form("login_form"):
+        username = st.text_input("User name")
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Log in", use_container_width=True)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(
-            """
-            <div class="card">
-                <div class="label">Member level</div>
-                <div class="value">Green</div>
-                <div class="pill">Active member</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    with col2:
-        st.markdown(
-            """
-            <div class="card">
-                <div class="label">QR access</div>
-                <div class="value">Ready to scan</div>
-                <div class="pill">Profile page</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    if submitted:
+        login(username, password)
+        st.rerun()
 
-    st.markdown('<div class="section-title">Quick overview</div>', unsafe_allow_html=True)
+    if st.session_state.login_error:
+        st.error("Incorrect user name or password")
 
-    st.markdown(
-        """
-        <div class="card">
-            <div class="label">Latest update</div>
-            <div class="value">New eco challenge available</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        """
-        <div class="card">
-            <div class="label">Next milestone</div>
-            <div class="value">500 points reward target</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        """
-        <div class="card">
-            <div class="label">What to check next</div>
-            <div class="value">Visit your Profile and News pages</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# -----------------------------
-# Profile page
-# -----------------------------
-elif page == "Profile":
-    st.markdown('<div class="app-title">Your Profile</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="app-subtitle">Personal account details for Group B</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        f"""
-        <div class="card">
-            <div class="label">Name</div>
-            <div class="value">Group B</div>
-            <br>
-            <div class="label">Member ID</div>
-            <div class="value">{st.session_state.member_id}</div>
-            <br>
-            <div class="label">Points earned</div>
-            <div class="value">{st.session_state.points}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown('<div class="section-title">Reward progress</div>', unsafe_allow_html=True)
-    st.progress(min(st.session_state.points / 500, 1.0))
-    st.caption("Progress towards 500 points")
-
-    qr_data = (
-        f"Name: Group B\n"
-        f"Member ID: {st.session_state.member_id}\n"
-        f"Points: {st.session_state.points}"
-    )
-    qr_image = generate_qr_code(qr_data)
-
-    st.markdown('<div class="section-title">Personal QR code</div>', unsafe_allow_html=True)
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.image(qr_image, width=230)
-    st.caption("Scan this QR code to view member details")
+    st.caption("Demo login: groupb / ecoearn123")
     st.markdown('</div>', unsafe_allow_html=True)
 
-
 # -----------------------------
-# News page
+# Main app
 # -----------------------------
-elif page == "News":
-    st.markdown('<div class="app-title">Latest News</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="app-subtitle">Recent updates from EcoEarn</div>',
-        unsafe_allow_html=True
-    )
+else:
+    st.sidebar.markdown("## EcoEarn")
+    page = st.sidebar.radio("", ["Home", "Profile", "News", "Messages"])
+    st.sidebar.markdown("---")
+    st.sidebar.write("Signed in as: Group B")
+    st.sidebar.write("Points: 420")
 
-    for item in st.session_state.news_items:
+    if st.sidebar.button("Log out", use_container_width=True):
+        logout()
+        st.rerun()
+
+    # Home page
+    if page == "Home":
+        st.markdown('<div class="app-title">EcoEarn</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="app-subtitle">A simple rewards app demo for Group B</div>',
+            unsafe_allow_html=True
+        )
+
         st.markdown(
             f"""
-            <div class="card">
-                <div class="news-title">{item["title"]}</div>
-                <div class="news-date">{item["date"]}</div>
-                <div class="news-text">{item["summary"]}</div>
+            <div class="hero-card">
+                <div class="hero-small">Welcome back</div>
+                <div style="font-size:1.2rem; font-weight:600;">Group B</div>
+                <p class="hero-points">{st.session_state.points} points</p>
+                <div class="hero-small">Your account is active and ready to use</div>
             </div>
             """,
             unsafe_allow_html=True
         )
 
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown(
+                """
+                <div class="card">
+                    <div class="label">Member level</div>
+                    <div class="value">Green</div>
+                    <div class="pill">Active member</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        with col2:
+            st.markdown(
+                """
+                <div class="card">
+                    <div class="label">QR access</div>
+                    <div class="value">Ready to scan</div>
+                    <div class="pill">Profile page</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-# -----------------------------
-# Messages page
-# -----------------------------
-elif page == "Messages":
-    st.markdown('<div class="app-title">Messages</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="app-subtitle">Account messages for Group B</div>',
-        unsafe_allow_html=True
-    )
+        st.markdown('<div class="section-title">Quick overview</div>', unsafe_allow_html=True)
 
-    for msg in st.session_state.messages:
         st.markdown(
-            f"""
+            """
             <div class="card">
-                <div class="news-title">{msg["from"]}</div>
-                <div class="news-date">{msg["date"]}</div>
-                <div class="news-text">{msg["text"]}</div>
+                <div class="label">Latest update</div>
+                <div class="value">New eco challenge available</div>
             </div>
             """,
             unsafe_allow_html=True
         )
+
+        st.markdown(
+            """
+            <div class="card">
+                <div class="label">Next milestone</div>
+                <div class="value">500 points reward target</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+            <div class="card">
+                <div class="label">What to check next</div>
+                <div class="value">Visit your Profile and News pages</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    # Profile page
+    elif page == "Profile":
+        st.markdown('<div class="app-title">Your Profile</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="app-subtitle">Personal account details for Group B</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"""
+            <div class="card">
+                <div class="label">Name</div>
+                <div class="value">Group B</div>
+                <br>
+                <div class="label">Member ID</div>
+                <div class="value">{st.session_state.member_id}</div>
+                <br>
+                <div class="label">Points earned</div>
+                <div class="value">{st.session_state.points}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.markdown('<div class="section-title">Reward progress</div>', unsafe_allow_html=True)
+        st.progress(min(st.session_state.points / 500, 1.0))
+        st.caption("Progress towards 500 points")
+
+        qr_data = (
+            f"Name: Group B\n"
+            f"Member ID: {st.session_state.member_id}\n"
+            f"Points: {st.session_state.points}"
+        )
+        qr_image = generate_qr_code(qr_data)
+
+        st.markdown('<div class="section-title">Personal QR code</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.image(qr_image, width=230)
+        st.caption("Scan this QR code to view member details")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # News page
+    elif page == "News":
+        st.markdown('<div class="app-title">Latest News</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="app-subtitle">Recent updates from EcoEarn</div>',
+            unsafe_allow_html=True
+        )
+
+        for item in st.session_state.news_items:
+            st.markdown(
+                f"""
+                <div class="card">
+                    <div class="news-title">{item["title"]}</div>
+                    <div class="news-date">{item["date"]}</div>
+                    <div class="news-text">{item["summary"]}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    # Messages page
+    elif page == "Messages":
+        st.markdown('<div class="app-title">Messages</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="app-subtitle">Account messages for Group B</div>',
+            unsafe_allow_html=True
+        )
+
+        for msg in st.session_state.messages:
+            st.markdown(
+                f"""
+                <div class="card">
+                    <div class="news-title">{msg["from"]}</div>
+                    <div class="news-date">{msg["date"]}</div>
+                    <div class="news-text">{msg["text"]}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
